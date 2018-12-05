@@ -1,26 +1,27 @@
 (ns riddley.compiler
   (:import
     [clojure.lang
-     Var
-     Compiler
-     Compiler$ObjMethod
-     Compiler$ObjExpr]
+     Var]
+    [clojure.lang.CljCompiler.Ast
+     ObjExpr
+     ObjMethod]
+
     [riddley
      Util]))
 
-(defn- stub-method []
-  (proxy [Compiler$ObjMethod] [(Compiler$ObjExpr. nil) nil]))
+;(defn- stub-method []
+;  (proxy [ObjMethod] [(ObjExpr. nil) nil]))
 
-(defn tag-of
-  "Returns a symbol representing the tagged class of the symbol, or `nil` if none exists."
-  [x]
-  (when-let [tag (-> x meta :tag)]
-    (let [sym (symbol
-                (if (instance? Class tag)
-                  (.getName ^Class tag)
-                  (name tag)))]
-      (when-not (= 'java.lang.Object sym)
-        sym))))
+; (defn tag-of
+;   "Returns a symbol representing the tagged class of the symbol, or `nil` if none exists."
+;   [x]
+;   (when-let [tag (-> x meta :tag)]
+;     (let [sym (symbol
+;                 (if (instance? Class tag)
+;                   (.getName ^Class tag)
+;                   (name tag)))]
+;       (when-not (= 'java.lang.Object sym)
+;         sym))))
 
 (let [n (atom 0)]
   (defn- local-id []
@@ -74,6 +75,3 @@
       (-> (locals)
         (dissoc x)
         (assoc x (Util/localArgument (local-id) x (tag-of x)))))))
-
-
-
